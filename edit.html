@@ -2,396 +2,90 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>❤️ 情侣真心话大冒险｜题库编辑</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>题库编辑｜真心话大冒险</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Microsoft Yahei", "PingFang SC", sans-serif;
-    }
-
-    body {
-        min-height: 100vh;
-        background: linear-gradient(135deg, #ffe4d6 0%, #ffd1c2 45%, #ffc2b4 100%);
-        color: #6b3b3b;
-        padding: 24px 16px 40px;
-    }
-
-    .app {
-        max-width: 720px;
-        margin: 0 auto;
-    }
-
-    header {
-        text-align: center;
-        margin-bottom: 24px;
-    }
-
-    h1 {
-        font-size: 28px;
-        color: #d45d56;
-        letter-spacing: 1px;
-    }
-
-    .subtitle {
-        margin-top: 6px;
-        font-size: 14px;
-        color: #b56a64;
-    }
-
-    /* 通用面板 */
-    .panel {
-        background: #fff;
-        border-radius: 20px;
-        padding: 24px;
-        box-shadow: 0 10px 30px rgba(212, 112, 107, 0.15);
-    }
-
-    .setting-type-tabs {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-
-    .setting-type-tab {
-        flex: 1;
-        border: none;
-        padding: 12px;
-        border-radius: 12px;
-        background: #ffe4dc;
-        color: #7c4b47;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-    }
-
-    .setting-type-tab.active {
-        background: linear-gradient(135deg, #ff9a8b, #ff7675);
-        color: #fff;
-    }
-
-    .setting-block {
-        display: none;
-    }
-
-    .setting-block.active {
-        display: block;
-    }
-
-    .setting-title {
-        font-size: 18px;
-        color: #d45d56;
-        margin-bottom: 6px;
-    }
-
-    .setting-desc {
-        font-size: 13px;
-        color: #b56a64;
-        margin-bottom: 18px;
-    }
-
-    /* 矩形题目列表 */
-    .item-list {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        margin-bottom: 16px;
-    }
-
-    .item-box {
-        background: #fff7f1;
-        border: 2px solid #ffd9cc;
-        border-radius: 14px;
-        padding: 14px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        transition: 0.25s ease;
-    }
-
-    .item-box:hover {
-        border-color: #ffb5a7;
-        box-shadow: 0 6px 18px rgba(255, 181, 167, 0.25);
-    }
-
-    .item-input {
-        width: 100%;
-        border: 1px solid #f2c9bc;
-        border-radius: 10px;
-        padding: 12px 14px;
-        background: #fff;
-        color: #5a2f2f;
-        font-size: 15px;
-        outline: none;
-        resize: none;
-        min-height: 48px;
-        font-family: inherit;
-    }
-
-    .item-input:focus {
-        border-color: #ff7675;
-        box-shadow: 0 0 0 3px rgba(255, 118, 117, 0.15);
-    }
-
-    .item-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .item-index {
-        background: linear-gradient(135deg, #ffb3a7, #ff8a80);
-        color: #fff;
-        font-size: 13px;
-        font-weight: 700;
-        padding: 6px 12px;
-        border-radius: 20px;
-        white-space: nowrap;
-    }
-
-    .item-actions {
-        display: flex;
-        gap: 8px;
-    }
-
-    .icon-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        border: none;
-        cursor: pointer;
-        font-size: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: 0.2s ease;
-    }
-
-    .icon-btn.add {
-        background: #dff5e1;
-        color: #2e7d32;
-    }
-
-    .icon-btn.add:hover {
-        background: #c9eccb;
-    }
-
-    .icon-btn.delete {
-        background: #ffe0e0;
-        color: #c0392b;
-    }
-
-    .icon-btn.delete:hover {
-        background: #ffcfcf;
-    }
-
-    .list-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #fff7f1;
-        border-radius: 12px;
-        padding: 14px 16px;
-        margin-top: 10px;
-    }
-
-    .count-text {
-        font-size: 14px;
-        color: #7c4b47;
-    }
-
-    .count-text strong {
-        color: #d45d56;
-        font-size: 18px;
-    }
-
-    /* 空状态 */
-    .empty-box {
-        background: #fff7f1;
-        border: 2px dashed #ffb5a7;
-        border-radius: 16px;
-        padding: 30px;
-        text-align: center;
-        color: #b56a64;
-    }
-
-    .tip-text{
-        text-align:center;
-        margin-top:12px;
-        color:#b56a64;
-        font-size:14px;
-    }
-
-    @media (max-width: 600px) {
-        h1 {
-            font-size: 24px;
-        }
-    }
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft Yahei",PingFangSC,sans-serif}
+body{background:#fff1ec;padding:20px 16px}
+.wrap{max-width:760px;margin:0 auto}
+h1{text-align:center;color:#d45d56;margin-bottom:20px;font-size:26px}
+.panel{background:#fff;border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 6px 20px rgba(212,93,86,.12)}
+h2{color:#c4524c;margin-bottom:14px;font-size:20px}
+textarea{width:100%;min-height:160px;padding:14px;border:1px solid #ffc9bc;border-radius:12px;font-size:15px;line-height:1.6}
+.btn{border:none;padding:12px 20px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-right:10px;margin-top:12px}
+.btn-save{background:#ff756b;color:#fff}
+.btn-back{background:#ffe1d8;color:#804844}
+.tip{margin-top:10px;color:#b46560;font-size:14px}
+@media(max-width:600px){
+    textarea{min-height:130px}
+}
 </style>
 </head>
-
 <body>
-<div class="app">
-    <header>
-        <h1>❤️ 题库编辑</h1>
-        <div class="subtitle">云端题库 · 修改后所有设备实时同步</div>
-    </header>
+<div class="wrap">
+    <h1>📝 题库编辑</h1>
 
-    <section class="panel">
-        <div class="setting-type-tabs">
-            <button class="setting-type-tab active" data-stype="truth">真心话题目</button>
-            <button class="setting-type-tab" data-stype="dare">大冒险题目</button>
-        </div>
+    <div class="panel">
+        <h2>💖 真心话（一行一条）</h2>
+        <textarea id="truthText"></textarea>
+    </div>
+    <div class="panel">
+        <h2>🔥 大冒险（一行一条）</h2>
+        <textarea id="dareText"></textarea>
+    </div>
 
-        <div class="setting-block active" id="setting-truth">
-            <div class="setting-title">真心话题库</div>
-            <div class="setting-desc">每个题目独立为一个矩形框，可单独编辑、删除或新增。</div>
-            <div class="item-list" id="truthList"></div>
-            <div class="list-footer">
-                <div class="count-text">当前真心话数量：<strong id="truthCount">0</strong></div>
-                <button class="icon-btn add" id="addTruthBtn" title="新增题目">+</button>
-            </div>
-        </div>
-
-        <div class="setting-block" id="setting-dare">
-            <div class="setting-title">大冒险题库</div>
-            <div class="setting-desc">每个题目独立为一个矩形框，可单独编辑、删除或新增。</div>
-            <div class="item-list" id="dareList"></div>
-            <div class="list-footer">
-                <div class="count-text">当前大冒险数量：<strong id="dareCount">0</strong></div>
-                <button class="icon-btn add" id="addDareBtn" title="新增题目">+</button>
-            </div>
-        </div>
-        <div class="tip-text">抽取游戏页面访问 index.html</div>
-    </section>
+    <div class="panel">
+        <button class="btn btn-save" id="saveBtn">💾 保存题库到云端</button>
+        <button class="btn btn-back" onclick="location.href='index.html'">← 返回抽取页面</button>
+        <div class="tip">保存后，抽取页面点【重新加载题库】更新题目</div>
+    </div>
 </div>
 
 <script>
-// ========= 已填入你的Supabase信息 =========
+// ========= Supabase配置，和index保持一致 =========
 const SUPABASE_URL = "https://bwhqzwtzlwlpmqhodntc.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_TEcDxR-JXpacYv82NPdF8w_T1XW0HRA";
-// ===========================================
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let store = {
-    truthList: [],
-    dareList: [],
-    truthPicked: [],
-    darePicked: []
-};
-let currentEditType = "truth";
+let dataStore = {};
 
-// 从云端拉取数据
-async function loadCloudData() {
-    const {data,error} = await supabaseClient.from('love_game_data').select('*').eq('id',1).single();
+//加载云端数据
+async function loadData(){
+    const {data,error}=await supabaseClient.from("love_game_data").select("*").eq("id",1).single();
     if(error){
-        console.error('读取云端失败',error);
-        alert("云端加载失败，请检查SQL建表语句是否执行成功");
+        alert("读取失败："+error.message);
         return;
     }
-    store.truthList = data.truth_list || [];
-    store.dareList = data.dare_list || [];
-    store.truthPicked = data.truth_picked || [];
-    store.darePicked = data.dare_picked || [];
-    renderSettingList('truth');
-    renderSettingList('dare');
+    dataStore = data;
+    document.getElementById("truthText").value = (data.truth_list||[]).join("\n");
+    document.getElementById("dareText").value = (data.dare_list||[]).join("\n");
 }
 
-// 保存全部数据到云端
-async function saveCloudData(){
-    const {error} = await supabaseClient.from('love_game_data')
-    .update({
-        truth_list: store.truthList,
-        dare_list: store.dareList,
-        truth_picked: store.truthPicked,
-        dare_picked: store.darePicked
-    }).eq('id',1);
-    if(error) console.error("保存失败",error);
-}
+//保存
+document.getElementById("saveBtn").onclick = async function(){
+    const truthRaw = document.getElementById("truthText").value;
+    const dareRaw = document.getElementById("dareText").value;
+    const truthArr = truthRaw.split("\n").filter(x=>x.trim()!=='');
+    const dareArr = dareRaw.split("\n").filter(x=>x.trim()!=='');
 
-document.querySelectorAll('.setting-type-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-        currentEditType = btn.dataset.stype;
-        document.querySelectorAll('.setting-type-tab').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.setting-block').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(`setting-${btn.dataset.stype}`).classList.add('active');
-    });
-});
+    const {error}=await supabaseClient.from("love_game_data").update({
+        truth_list:truthArr,
+        dare_list:dareArr,
+        truth_picked:dataStore.truth_picked||[],
+        dare_picked:dataStore.dare_picked||[]
+    }).eq("id",1);
 
-function renderSettingList(type) {
-    const list = type === 'truth' ? store.truthList : store.dareList;
-    const wrap = document.getElementById(`${type}List`);
-    const countEl = document.getElementById(`${type}Count`);
-
-    if (list.length === 0) {
-        wrap.innerHTML = `<div class="empty-box">还没有题目，点击右下角 + 新增一条</div>`;
-    } else {
-        wrap.innerHTML = list.map((item, index) => `
-            <div class="item-box">
-                <textarea class="item-input" data-type="${type}" data-index="${index}" placeholder="输入题目内容...">${item}</textarea>
-                <div class="item-row">
-                    <span class="item-index">第 ${index + 1} 题</span>
-                    <div class="item-actions">
-                        <button class="icon-btn delete" data-delete="${type}" data-index="${index}" title="删除题目">🗑</button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
+    if(error){
+        alert("保存失败："+error.message);
+    }else{
+        alert("✅题库保存成功！");
     }
+};
 
-    countEl.textContent = list.length;
-    bindSettingEvents(type);
-}
-
-function bindSettingEvents(type) {
-    document.querySelectorAll(`.item-input[data-type="${type}"]`).forEach(textarea => {
-        textarea.addEventListener('input', async (e) => {
-            const index = +e.target.dataset.index;
-            if (type === 'truth') {
-                store.truthList[index] = e.target.value;
-            } else {
-                store.dareList[index] = e.target.value;
-            }
-            await saveCloudData();
-        });
-    });
-
-    document.querySelectorAll(`.icon-btn.delete[data-delete="${type}"]`).forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            const index = +e.currentTarget.dataset.index;
-            if (type === 'truth') {
-                store.truthList.splice(index, 1);
-            } else {
-                store.dareList.splice(index, 1);
-            }
-            await saveCloudData();
-            renderSettingList(type);
-        });
-    });
-}
-
-document.getElementById('addTruthBtn').addEventListener('click', async () => {
-    store.truthList.push('');
-    await saveCloudData();
-    renderSettingList('truth');
-});
-
-document.getElementById('addDareBtn').addEventListener('click', async () => {
-    store.dareList.push('');
-    await saveCloudData();
-    await renderSettingList('dare');
-});
-
-//初始化
-(async function init(){
-    await loadCloudData();
-})();
+//页面载入
+loadData();
 </script>
 </body>
 </html>

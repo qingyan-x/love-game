@@ -268,7 +268,7 @@
 </div>
 
 <script>
-// ========= 已填入你的Supabase信息 =========
+// ========= 填入你的Supabase信息 =========
 const SUPABASE_URL = "https://bwhqzwtzlwlpmqhodntc.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_TEcDxR-JXpacYv82NPdF8w_T1XW0HRA";
 // ===========================================
@@ -300,7 +300,7 @@ async function loadCloudData() {
     const {data,error} = await supabaseClient.from('love_game_data').select('*').eq('id',1).single();
     if(error){
         console.error('读取云端失败',error);
-        alert("云端加载失败，请检查supabase配置或者SQL建表语句是否执行");
+        alert("云端加载失败，请检查supabase配置");
         return;
     }
     store.truthList = data.truth_list || [];
@@ -398,23 +398,9 @@ document.getElementById('resetBtn').addEventListener('click', async () => {
     alert('✅ 抽取记录已重置！云端已同步');
 });
 
-//初始化 + 实时监听数据库变化
+//初始化（移除实时订阅，不会自动弹窗）
 (async function init(){
     await loadCloudData();
-    //订阅love_game_data表id=1的数据变更
-    const channel = supabaseClient
-    .channel('love_game_realtime')
-    .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'love_game_data',
-        filter: 'id=eq.1'
-    }, async ()=>{
-        console.log("检测到题库更新，自动重新拉取！")
-        await loadCloudData();
-        document.getElementById('drawCard').innerHTML = '<span>✅题库已更新，点击【开始抽取】</span>';
-    })
-    .subscribe();
 })();
 </script>
 </body>
