@@ -239,7 +239,7 @@
 <div class="app">
     <header>
         <h1>❤️ 情侣真心话大冒险</h1>
-        <div class="subtitle">暖甜互动 · 云端题库 · 多设备同步</div>
+        <div class="subtitle">暖甜互动 · 热恋刺激 · 激情满满</div>
     </header>
 
     <!-- 游戏面板 -->
@@ -255,15 +255,15 @@
 
         <div class="btn-row">
             <button class="btn-primary" id="drawBtn">🎲 开始抽取</button>
-            <button class="btn-secondary" id="reloadBtn">📥 重新加载题库</button>
-            <button class="btn-secondary" id="resetBtn">🔄 重置记录</button>
+            <button class="btn-secondary" id="reloadBtn">📥 重新加载内容</button>
+            <button class="btn-secondary" id="resetBtn">🔄 刷新记录</button>
         </div>
 
         <label class="option-row">
             <input type="checkbox" id="noRepeat" />
             <span>抽过的题目不再重复抽取</span>
         </label>
-        <div class="tip-text">编辑题库请访问 edit.html</div>
+        <div class="tip-text">-让热恋中的情侣们更加激情满满-</div>
     </section>
 </div>
 
@@ -334,7 +334,7 @@ document.querySelectorAll('.type-tab').forEach(btn => {
 /* ========== 重新加载题库按钮 ========== */
 document.getElementById('reloadBtn').addEventListener('click',async ()=>{
     await loadCloudData();
-    alert("✅题库已从云端刷新！");
+    alert("✅内容已从云端刷新！");
     document.getElementById('drawCard').innerHTML = '<span>点击【开始抽取】</span>';
 })
 
@@ -358,7 +358,7 @@ async function startDraw() {
     if (noRepeat) {
         pool = sourceList.filter(item => !pickedList.includes(item));
         if (pool.length === 0) {
-            alert('🎉 本轮题目已全部抽完，点击重置抽取记录！');
+            alert('🎉 本轮内容已全部抽完，点击刷新记录！');
             return;
         }
     }
@@ -395,7 +395,7 @@ document.getElementById('resetBtn').addEventListener('click', async () => {
     store.darePicked = [];
     await saveCloudData();
     document.getElementById('drawCard').innerHTML = '<span>点击【开始抽取】</span>';
-    alert('✅ 抽取记录已重置！云端已同步');
+    alert('✅ 抽取记录已刷新！云端已同步');
 });
 
 //初始化（移除实时订阅，不会自动弹窗）
