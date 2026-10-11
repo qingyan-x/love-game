@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>❤️ 情侣真心话大冒险｜抽取</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Microsoft Yahei", "PingFang SC", sans-serif;
+    }
+
+    body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #ffe4d6 0%, #ffd1c2 45%, #ffc2b4 100%);
+        color: #6b3b3b;
+        padding: 24px 16px 40px;
+    }
+
+    .app {
+        max-width: 720px;
+        margin: 0 auto;
+    }
+
+    header {
+        text-align: center;
+        margin-bottom: 24px;
+    }
+
+    h1 {
+        font-size: 28px;
+        color: #d45d56;
+        letter-spacing: 1px;
+    }
+
+    .subtitle {
+        margin-top: 6px;
+        font-size: 14px;
+        color: #b56a64;
+    }
+
+    /* 通用面板 */
+    .panel {
+        background: #fff;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(212, 112, 107, 0.15);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 揭晓弹跳动画 */
+    @keyframes bounceIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.6);
+        }
+        55% {
+            opacity: 1;
+            transform: scale(1.08);
+        }
+        70% {
+            transform: scale(0.96);
+        }
+        85% {
+            transform: scale(1.03);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    .bounce-in {
+        animation: bounceIn 0.6s ease;
+    }
+
+    /* 游戏类型 Tab */
+    .type-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .type-tab {
+        flex: 1;
+        border: none;
+        padding: 12px;
+        border-radius: 12px;
+        background: #ffe4dc;
+        color: #7c4b47;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s ease;
+    }
+
+    .type-tab.active {
+        background: linear-gradient(135deg, #ffb3a7, #ff8a80);
+        color: #fff;
+    }
+
+    /* 抽取卡片 */
+    .draw-card {
+        background: linear-gradient(160deg, #fff7f1, #ffe3d8);
+        border: 2px dashed #ffb5a7;
+        border-radius: 20px;
+        padding: 50px 24px;
+        min-height: 240px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 22px;
+        line-height: 1.7;
+        color: #6b3b3b;
+        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .draw-card .countdown {
+        font-size: 90px;
+        font-weight: 800;
+        color: #ff6b6b;
+        text-shadow: 0 6px 24px rgba(255, 107, 107, 0.35);
+    }
+
+    .draw-card .result-text {
+        font-size: 21px;
+        color: #5a2f2f;
+        font-weight: 600;
+    }
+
+    /* 按钮组 */
+    .btn-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    button {
+        border: none;
+        border-radius: 14px;
+        padding: 14px 18px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s ease;
+    }
+
+    .btn-primary {
+        flex: 1;
+        background: linear-gradient(135deg, #ff7675, #ff5252);
+        color: #fff;
+        box-shadow: 0 10px 24px rgba(255, 82, 82, 0.35);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 28px rgba(255, 82, 82, 0.45);
+    }
+
+    .btn-secondary {
+        background: #ffe0d6;
+        color: #7c4b47;
+    }
+
+    .btn-secondary:hover {
+        background: #ffd2c4;
+    }
+
+    .btn-danger {
+        background: #ffd6d6;
+        color: #c0392b;
+    }
+
+    .btn-danger:hover {
+        background: #ffc4c4;
+    }
+
+    /* 复选框 */
+    .option-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #fff7f1;
+        padding: 14px 16px;
+        border-radius: 12px;
+        margin-top: 8px;
+    }
+
+    .option-row input {
+        width: 18px;
+        height: 18px;
+        accent-color: #ff7675;
+    }
+
+    .tip-text{
+        text-align:center;
+        margin-top:12px;
+        color:#b56a64;
+        font-size:14px;
+    }
+
+    @media (max-width: 600px) {
+        h1 {
+            font-size: 24px;
+        }
+
+        .draw-card {
+            padding: 40px 18px;
+            min-height: 220px;
+            font-size: 19px;
+        }
+
+        .draw-card .countdown {
+            font-size: 72px;
+        }
+
+        .btn-row {
+            flex-direction: column;
+        }
+
+        button {
+            width: 100%;
+        }
+    }
+</style>
+</head>
+
+<body>
+<div class="app">
+    <header>
+        <h1>❤️ 情侣真心话大冒险</h1>
+        <div class="subtitle">暖甜互动 · 云端题库 · 多设备同步</div>
+    </header>
+
+    <!-- 游戏面板 -->
+    <section class="panel">
+        <div class="type-tabs">
+            <button class="type-tab active" data-gtype="truth">真心话</button>
+            <button class="type-tab" data-gtype="dare">大冒险</button>
+        </div>
+
+        <div class="draw-card" id="drawCard">
+            <span>点击【开始抽取】</span>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn-primary" id="drawBtn">🎲 开始抽取</button>
+            <button class="btn-secondary" id="reloadBtn">📥 重新加载题库</button>
+            <button class="btn-secondary" id="resetBtn">🔄 重置记录</button>
+        </div>
+
+        <label class="option-row">
+            <input type="checkbox" id="noRepeat" />
+            <span>抽过的题目不再重复抽取</span>
+        </label>
+        <div class="tip-text">编辑题库请访问 edit.html</div>
+    </section>
+</div>
+
+<script>
+// ========= 已填入你的Supabase信息 =========
+const SUPABASE_URL = "https://bwhqzwtzlwlpmqhodntc.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_TEcDxR-JXpacYv82NPdF8w_T1XW0HRA";
+// ===========================================
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let store = {
+    truthList: [],
+    dareList: [],
+    truthPicked: [],
+    darePicked: []
+};
+
+let currentGameType = "truth";
+let isDrawing = false;
+
+// 洗牌函数 Fisher-Yates
+function shuffle(arr) {
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+}
+
+// 从云端拉取数据
+async function loadCloudData() {
+    const {data,error} = await supabaseClient.from('love_game_data').select('*').eq('id',1).single();
+    if(error){
+        console.error('读取云端失败',error);
+        alert("云端加载失败，请检查supabase配置或者SQL建表语句是否执行");
+        return;
+    }
+    store.truthList = data.truth_list || [];
+    store.dareList = data.dare_list || [];
+    store.truthPicked = data.truth_picked || [];
+    store.darePicked = data.dare_picked || [];
+}
+
+// 保存全部数据到云端
+async function saveCloudData(){
+    const {error} = await supabaseClient.from('love_game_data')
+    .update({
+        truth_list: store.truthList,
+        dare_list: store.dareList,
+        truth_picked: store.truthPicked,
+        dare_picked: store.darePicked
+    }).eq('id',1);
+    if(error) console.error("保存失败",error);
+}
+
+/* ========== Tab 切换 ========== */
+document.querySelectorAll('.type-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+        currentGameType = btn.dataset.gtype;
+        document.querySelectorAll('.type-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('drawCard').innerHTML = '<span>点击【开始抽取】</span>';
+    });
+});
+
+/* ========== 重新加载题库按钮 ========== */
+document.getElementById('reloadBtn').addEventListener('click',async ()=>{
+    await loadCloudData();
+    alert("✅题库已从云端刷新！");
+    document.getElementById('drawCard').innerHTML = '<span>点击【开始抽取】</span>';
+})
+
+/* ========== 游戏抽取：3秒倒计时 + 洗牌 + 弹跳动画 ========== */
+document.getElementById('drawBtn').addEventListener('click', startDraw);
+
+async function startDraw() {
+    if (isDrawing) return;
+    await loadCloudData(); //抽取前先拉最新云端数据
+
+    const noRepeat = document.getElementById('noRepeat').checked;
+    const sourceList = currentGameType === 'truth' ? store.truthList : store.dareList;
+    const pickedList = currentGameType === 'truth' ? store.truthPicked : store.darePicked;
+
+    if (sourceList.length === 0) {
+        alert('⚠️ 当前题库为空，请去edit.html添加题目！');
+        return;
+    }
+
+    let pool = [...sourceList];
+    if (noRepeat) {
+        pool = sourceList.filter(item => !pickedList.includes(item));
+        if (pool.length === 0) {
+            alert('🎉 本轮题目已全部抽完，点击重置抽取记录！');
+            return;
+        }
+    }
+    // 每次抽取前，先把候选池整体洗牌打乱
+    pool = shuffle(pool);
+    const finalItem = pool[0];
+
+    isDrawing = true;
+    const drawCard = document.getElementById('drawCard');
+    let count = 3;
+
+    drawCard.innerHTML = `<span class="countdown">${count}</span>`;
+
+    const timer = setInterval(() => {
+        count--;
+        if (count > 0) {
+            drawCard.innerHTML = `<span class="countdown">${count}</span>`;
+        } else {
+            clearInterval(timer);
+            drawCard.innerHTML = `<span class="result-text bounce-in">${finalItem}</span>`;
+
+            if (noRepeat) {
+                pickedList.push(finalItem);
+                saveCloudData();
+            }
+            isDrawing = false;
+        }
+    }, 1000);
+}
+
+/* ========== 重置抽取记录 ========== */
+document.getElementById('resetBtn').addEventListener('click', async () => {
+    store.truthPicked = [];
+    store.darePicked = [];
+    await saveCloudData();
+    document.getElementById('drawCard').innerHTML = '<span>点击【开始抽取】</span>';
+    alert('✅ 抽取记录已重置！云端已同步');
+});
+
+//初始化 + 实时监听数据库变化
+(async function init(){
+    await loadCloudData();
+    //订阅love_game_data表id=1的数据变更
+    const channel = supabaseClient
+    .channel('love_game_realtime')
+    .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'love_game_data',
+        filter: 'id=eq.1'
+    }, async ()=>{
+        console.log("检测到题库更新，自动重新拉取！")
+        await loadCloudData();
+        document.getElementById('drawCard').innerHTML = '<span>✅题库已更新，点击【开始抽取】</span>';
+    })
+    .subscribe();
+})();
+</script>
+</body>
+</html>
